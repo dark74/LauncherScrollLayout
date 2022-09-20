@@ -144,7 +144,7 @@ public class ScrollLayout extends ViewGroup implements ScrollAdapter.OnDataChang
     //页面滑动的监听
     private OnPageChangedListener pageChangedListener;
     //删除或增加页面的监听
-    private OnAddOrDeletePage onAddPage;
+    private OnAddOrDeletePage addOrDeletePageListener;
     //Container编辑模式的监听
     private OnEditModeListener onEditModeListener;
 
@@ -170,10 +170,10 @@ public class ScrollLayout extends ViewGroup implements ScrollAdapter.OnDataChang
 
         this.mCurScreen = mDefaultScreen;
 
-        this.rightPadding = DensityUtil.dip2px(mContext, 70);
+        this.rightPadding = DensityUtil.dip2px(mContext, 10);
         this.leftPadding = DensityUtil.dip2px(mContext, 10);
-        this.topPadding = DensityUtil.dip2px(mContext, 30);
-        this.bottomPadding = DensityUtil.dip2px(mContext, 30);
+        this.topPadding = DensityUtil.dip2px(mContext, 10);
+        this.bottomPadding = DensityUtil.dip2px(mContext, 10);
 
         this.colSpace = DensityUtil.dip2px(mContext, 15);
         this.rowSpace = DensityUtil.dip2px(mContext, 15);
@@ -185,7 +185,7 @@ public class ScrollLayout extends ViewGroup implements ScrollAdapter.OnDataChang
 
             @Override
             public void onClick(View v) {
-                showEdit(false);
+                showEdit(false); // 点击容器空白处退出桌面编辑模式
             }
         });
     }
@@ -204,10 +204,10 @@ public class ScrollLayout extends ViewGroup implements ScrollAdapter.OnDataChang
         if (child.getVisibility() != View.VISIBLE)
             child.setVisibility(View.VISIBLE);
         super.addView(child, index, params);
-        int pages = (int) Math.ceil(getChildCount() * 1.0 / itemPerPage);
+        int pages = (int) Math.ceil(getChildCount() * 1.0 / itemPerPage); // 当前被添加的item所在的page索引
         if (pages > totalPage) {
-            if (this.onAddPage != null)
-                onAddPage.onAddOrDeletePage(totalPage, true);
+            if (this.addOrDeletePageListener != null)
+                addOrDeletePageListener.onAddOrDeletePage(totalPage, true);
             totalPage = pages;
         }
     }
@@ -227,8 +227,8 @@ public class ScrollLayout extends ViewGroup implements ScrollAdapter.OnDataChang
         super.removeView(view);
         int pages = (int) Math.ceil(getChildCount() * 1.0 / itemPerPage);
         if (pages < totalPage) {
-            if (this.onAddPage != null)
-                onAddPage.onAddOrDeletePage(totalPage, false);
+            if (this.addOrDeletePageListener != null)
+                addOrDeletePageListener.onAddOrDeletePage(totalPage, false);
             totalPage = pages;
         }
     }
@@ -239,8 +239,8 @@ public class ScrollLayout extends ViewGroup implements ScrollAdapter.OnDataChang
         int pages = (int) Math.ceil(getChildCount() * 1.0 / itemPerPage);
         if (pages < totalPage) {
             totalPage = pages;
-            if (this.onAddPage != null)
-                onAddPage.onAddOrDeletePage(totalPage, false);
+            if (this.addOrDeletePageListener != null)
+                addOrDeletePageListener.onAddOrDeletePage(totalPage, false);
         }
     }
 
@@ -512,10 +512,10 @@ public class ScrollLayout extends ViewGroup implements ScrollAdapter.OnDataChang
                 @Override
                 public boolean onLongClick(View v) {
                     Log.e("test", "onLongClick");
-                    //					if (Mode != Mode_Scroll) {
+                    //if (Mode != Mode_Scroll) {
                     return onItemLongClick(v);
-                    //					}
-                    //					return false;
+                    //}
+                    //return false;
                 }
             });
         }
@@ -588,7 +588,7 @@ public class ScrollLayout extends ViewGroup implements ScrollAdapter.OnDataChang
     }
 
     public OnAddOrDeletePage getOnCaculatePage() {
-        return onAddPage;
+        return addOrDeletePageListener;
     }
 
     public OnEditModeListener getOnEditModeListener() {
@@ -720,22 +720,29 @@ public class ScrollLayout extends ViewGroup implements ScrollAdapter.OnDataChang
 
         screenWidth = width;
         screenHeight = height;
+        // 当前容器去除padding和列间距后，可绘制子View的剩余宽度
         int usedWidth = width - leftPadding - rightPadding - (colCount - 1)
                 * colSpace;
+        // 当前容器去除padding和行间距后，可绘制子View的剩余高度
         int usedheight = ((height - topPadding - bottomPadding - (rowCount - 1)
                 * rowSpace));
+        // 均分情况下，每个子View所占的宽度
         int childWidth = usedWidth / colCount;
+        // 均分情况下，每个子View所占的高度
         int childHeight = usedheight / rowCount;
         final int count = getChildCount();
         for (int i = 0; i < count; i++) {
             View child = getChildAt(i);
             int childWidthSpec = getChildMeasureSpec(
-                    MeasureSpec
-                            .makeMeasureSpec(childWidth, MeasureSpec.EXACTLY),
-                    20, childWidth);
+                    MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY),
+                    20, // 父view的左右padding + 子View的左右Margin + 当前父View已经使用的宽度
+                    childWidth
+            );
             int childHeightSpec = getChildMeasureSpec(
-                    MeasureSpec.makeMeasureSpec(childHeight,
-                            MeasureSpec.EXACTLY), 20, childHeight);
+                    MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY),
+                    20,
+                    childHeight
+            );
             child.measure(childWidthSpec, childHeightSpec);
         }
         scrollTo(mCurScreen * width, 0);
@@ -813,8 +820,8 @@ public class ScrollLayout extends ViewGroup implements ScrollAdapter.OnDataChang
         this.leftPadding = leftPadding;
     }
 
-    public void setOnAddPage(OnAddOrDeletePage onAddPage) {
-        this.onAddPage = onAddPage;
+    public void setAddOrDeletePageListener(OnAddOrDeletePage addOrDeletePageListener) {
+        this.addOrDeletePageListener = addOrDeletePageListener;
     }
 
     public void setOnEditModeListener(OnEditModeListener onEditModeListener) {
@@ -882,7 +889,7 @@ public class ScrollLayout extends ViewGroup implements ScrollAdapter.OnDataChang
             iv.setTag(child.getTag());
             iv.setVisibility(isEdit == true ? View.VISIBLE : View.GONE);
             if (isEdit) {
-                iv.setOnClickListener(new DelItemClick(i));
+                iv.setOnClickListener(new DelItemClickListener(i));
             }
         }
 
@@ -890,8 +897,8 @@ public class ScrollLayout extends ViewGroup implements ScrollAdapter.OnDataChang
             int pages = (int) Math.ceil(getChildCount() * 1.0 / itemPerPage);
             if (pages < totalPage) {
                 totalPage = pages;
-                if (this.onAddPage != null)
-                    onAddPage.onAddOrDeletePage(totalPage + 1, false);
+                if (this.addOrDeletePageListener != null)
+                    addOrDeletePageListener.onAddOrDeletePage(totalPage + 1, false);
             }
         }
     }
@@ -932,10 +939,10 @@ public class ScrollLayout extends ViewGroup implements ScrollAdapter.OnDataChang
     /**
      * 删除按钮的功能处理
      */
-    private final class DelItemClick implements OnClickListener {
+    private final class DelItemClickListener implements OnClickListener {
         int deletePostion;
 
-        public DelItemClick(int deletePostion) {
+        public DelItemClickListener(int deletePostion) {
             this.deletePostion = deletePostion;
         }
 

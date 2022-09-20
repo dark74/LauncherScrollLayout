@@ -77,7 +77,7 @@ public class MainActivity extends Activity implements ScrollLayout.OnAddOrDelete
         //初始化Container的Adapter
         mItemsAdapter = new ScrollAdapter(this, mList);
         //设置Container添加删除Item的回调
-        mContainer.setOnAddPage(this);
+        mContainer.setAddOrDeletePageListener(this);
         //设置Container页面换转的回调，比如自第一页滑动第二页
         mContainer.setOnPageChangedListener(this);
         //设置Container编辑模式的回调，长按进入修改模式
