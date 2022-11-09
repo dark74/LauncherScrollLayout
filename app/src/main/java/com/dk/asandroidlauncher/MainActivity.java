@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.dk.asandroidlauncher.adapter.ScrollAdapter;
 import com.dk.asandroidlauncher.bean.MoveItem;
+import com.dk.asandroidlauncher.util.DoKitJsonUtil;
 import com.dk.asandroidlauncher.widget.ScrollLayout;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.db.sqlite.Selector;

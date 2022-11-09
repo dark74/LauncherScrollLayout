@@ -24,6 +24,15 @@
         </activity>
         <!--        <activity android:name=".DragViewActivity" />-->
         <activity android:name=".CellLayoutActivity" />
+        <service
+            android:name="com.dk.asandroidlauncher.service.ARLauncherDataService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.dk.asandroidlauncher.get_data" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
