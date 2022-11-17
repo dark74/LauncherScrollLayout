@@ -1,4 +1,4 @@
-package com.dk.asandroidlauncher.service
+package com.android.launcher3.glasses
 
 import android.app.Service
 import android.content.Intent
@@ -13,7 +13,7 @@ import com.dk.asandroidlauncher.IFlymeLauncherConfigManager
  * @Date : 2022/11/3 20:41
  * @Email : ke.dong@xjsd.com
  */
-class ARLauncherDataService : Service() {
+class ArLauncherConfigService : Service() {
     
     private val stub: IFlymeLauncherConfigManager.Stub = object : IFlymeLauncherConfigManager.Stub() {
         @Throws(RemoteException::class)

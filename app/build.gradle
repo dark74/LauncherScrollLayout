@@ -7,7 +7,7 @@ android {
     compileSdk 32
 
     defaultConfig {
-        applicationId "com.dk.customlauncher"
+        applicationId "com.meizu.flyme.launcher"
         minSdk 21
         targetSdk 32
         versionCode 1
