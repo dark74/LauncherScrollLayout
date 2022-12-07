@@ -1,5 +1,5 @@
 // IFlymeLauncherConfigManager.aidl
-package com.dk.asandroidlauncher;
+package com.xj.glasses;
 /**
 * Flyme Launcher为AR桌面提供数据
 */

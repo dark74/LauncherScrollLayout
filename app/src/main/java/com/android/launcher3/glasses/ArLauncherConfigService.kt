@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.IBinder
 import android.os.RemoteException
 import android.util.Log
-import com.dk.asandroidlauncher.IFlymeLauncherConfigManager
+import com.xj.glasses.IFlymeLauncherConfigManager
 
 /**
  * @Description :
@@ -31,11 +31,11 @@ class ArLauncherConfigService : Service() {
         val json =
             """
         {
-          "numRows": 6,
-          "numColumns": 4,
-          "cellLayoutCounts": 5,
-          "workspaceCellLayoutWidth": 1408,
-          "workspaceCellLayoutHeight": 2111
+            "numRows": 6,
+            "numColumns": 4,
+            "cellLayoutCounts": 4,
+            "workspaceCellLayoutWidth": 1408,
+            "workspaceCellLayoutHeight": 2111
         }
         """.trimIndent()
     }
