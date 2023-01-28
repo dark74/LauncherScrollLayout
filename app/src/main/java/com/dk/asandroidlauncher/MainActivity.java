@@ -7,9 +7,7 @@ import android.graphics.BitmapFactory.Options;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.dk.asandroidlauncher.adapter.ScrollAdapter;
 import com.dk.asandroidlauncher.bean.MoveItem;
-import com.dk.asandroidlauncher.util.DoKitJsonUtil;
 import com.dk.asandroidlauncher.widget.ScrollLayout;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.db.sqlite.Selector;
@@ -19,14 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressLint("HandlerLeak")
-public class MainActivity extends Activity implements ScrollLayout.OnAddOrDeletePage,
-        ScrollLayout.OnPageChangedListener, ScrollLayout.OnEditModeListener {
+public class MainActivity extends Activity {
     private static final String TAG = "MainActivity";
     // 滑动控件的容器Container
     private ScrollLayout mContainer;
 
     // Container的Adapter
-    private ScrollAdapter mItemsAdapter;
     // Container中滑动控件列表
     private List<MoveItem> mList;
 
@@ -75,22 +71,6 @@ public class MainActivity extends Activity implements ScrollLayout.OnAddOrDelete
                 mList.add(item);
             }
         }
-        //初始化Container的Adapter
-        mItemsAdapter = new ScrollAdapter(this, mList);
-        //设置Container添加删除Item的回调
-        mContainer.setAddOrDeletePageListener(this);
-        //设置Container页面换转的回调，比如自第一页滑动第二页
-        mContainer.setOnPageChangedListener(this);
-        //设置Container编辑模式的回调，长按进入修改模式
-        mContainer.setOnEditModeListener(this);
-        //设置Adapter
-        mContainer.setSaAdapter(mItemsAdapter);
-        //动态设置Container每页的列数为2行
-        mContainer.setColCount(2);
-        //动态设置Container每页的行数为4行
-        mContainer.setRowCount(4);
-        //调用refreView绘制所有的Item
-        mContainer.refreView();
     }
 
     // 设置Container滑动背景图片
@@ -122,19 +102,5 @@ public class MainActivity extends Activity implements ScrollLayout.OnAddOrDelete
             super.onBackPressed();
             android.os.Process.killProcess(android.os.Process.myPid());
         }
-    }
-
-    @Override
-    public void onEdit() {
-        Log.e("test", "onEdit");
-    }
-
-    @Override
-    public void onPage2Other(int former, int current) {
-        Log.e("test", "former-->" + former + "  current-->" + current);
-    }
-
-    public void onAddOrDeletePage(int page, boolean isAdd) {
-        Log.e("test", "page-->" + page + "  isAdd-->" + isAdd);
     }
 }
